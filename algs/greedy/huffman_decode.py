@@ -1,50 +1,42 @@
 import re
+import sys
+import os
 
-class Node:
-    
-    def __init__(self, char=None):
-        self.char = char
-        self.left = None
-        self.right = None
+sys.path.append(os.path.abspath('../../'))
+from dstructs.node import Node
 
-class Tree:
-
-    def __init__(self):
-        self.head = Node()
-
-    def add_node(self, parent: Node, child: Node, to_left: bool):
-        if to_left:
-            parent.left = child
-        else:
-            parent.right = child
+def add_node(parent: Node, child: Node, to_left: bool):
+    if to_left:
+        parent.left = child
+    else:
+        parent.right = child
 
 def build_tree(chars_codes: dict):
-    t = Tree()
-    curr_node = t.head
+    curr_node = root = Node()
     for char, code in chars_codes.items():
         last_idx = len(code) - 1
         for idx, c in enumerate(code):
             to_left = c == '0'
             if idx == last_idx:
                 leaf = Node(char)
-                t.add_node(curr_node, leaf, to_left)
+                add_node(curr_node, leaf, to_left)
 
             elif to_left:
                 if curr_node.left is None:
-                    t.add_node(curr_node, Node(), to_left)
+                    add_node(curr_node, Node(), to_left)
                 curr_node = curr_node.left
 
             else:
                 if curr_node.right is None:
-                    t.add_node(curr_node, Node(), to_left)
+                    add_node(curr_node, Node(), to_left)
                 curr_node = curr_node.right
             
-        curr_node = t.head
-    return t
+        curr_node = root
+    return root
 
-def decode(s: str, t: Tree):
+def decode(s: str, root: Node):
     decoded_str = ""
-    curr_node = t.head
+    curr_node = root
     n = len(s)
     i = 0
     to_left = s[i] == '0'
@@ -58,8 +50,8 @@ def decode(s: str, t: Tree):
             i += 1
             to_left = s[i] == '0' if i < n else None
 
-        decoded_str += curr_node.char
-        curr_node = t.head
+        decoded_str += curr_node.val
+        curr_node = root
 
     return decoded_str
 

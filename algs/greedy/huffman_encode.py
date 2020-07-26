@@ -1,25 +1,17 @@
-import heapq
 from collections import Counter
+import sys
+import os
 
-class Node:
-
-    def __init__(self, freq=0):
-        self.left = None
-        self.right = None
-        self.freq = freq or 0
-
-    def __lt__(self, other):
-       return self.freq < other.freq
+sys.path.append(os.path.abspath('../../'))
+from dstructs.node import Node
+from dstructs.heap import MinHeap
 
 class Leaf(Node):
 
     def __init__(self, char, freq):
         super().__init__(freq)
         self.c = char
-
-    def __lt__(self, other):
-        return self.freq < other.freq
-
+        
 def gen_codes(node: Node, curr_code: str, codes: dict):
     if isinstance(node, Leaf):
         if curr_code == "":
@@ -31,22 +23,22 @@ def gen_codes(node: Node, curr_code: str, codes: dict):
     
 def huffman_code(leafs: list):
     n = len(leafs)
-    Q = []
+    h = MinHeap()
 
     for i in range(n):
-        heapq.heappush(Q, leafs[i])
+        h.insert(leafs[i])
 
     for i in range(n - 1):
         z = Node()
-        z.left = x = heapq.heappop(Q)
-        z.right = y = heapq.heappop(Q)
-        z.freq = x.freq + y.freq
-        heapq.heappush(Q, z)
-    res = heapq.heappop(Q)
+        z.left = x = h.extract_min()
+        z.right = y = h.extract_min()
+        z.val = x.val + y.val
+        h.insert(z)
+    res = h.extract_min()
     return res
 
 def main():
-    s = "aaaa"
+    s = "abacabad"
     c = Counter()
     
     for char in s:
